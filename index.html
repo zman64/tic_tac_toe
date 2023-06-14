@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -13,6 +16,7 @@
     <main>
         <div class="game_container">
           <button class="reset">Reset</button>
+          <button class="new_game">New Game</button>
           <h1 class="turn"></h1>
           <div class="board"></div>
         </div>
@@ -20,19 +24,22 @@
     <footer>
         <p>2023 Odin Project</p>
     </footer>
-    <div class="modal hidden" id="modal">
+    <div class="modal" id="modal">
       <div class="overlay" id="overlay"></div>
-      <div id="start-game-form">
-        <h2 class="new-game-title">Start a New Game</h2>
+      <div id="start_game_form">
+        <h2 class="new_game_title">Start a New Game</h2>
         <form action="#" class="player_form">
           <div class="input">
-            <label for="first_player">First Player Name:</label>
-            <input
-              type="text"
-              name="first_player"
-              id="first_player"
-              placeholder="Name"
-            />
+            <div class="name_input">
+                <label for="first_player">First Player:</label>
+                <input
+                  type="text"
+                  name="first_player"
+                  id="first_player"
+                  placeholder="Name"
+                  required
+                />
+            </div>
             <fieldset>
               <legend>First Player Symbol:</legend>
               <ul>
@@ -43,7 +50,7 @@
                     type="radio"
                     name="first_player_symbol"
                     id="symbol-x-first"
-                    checked
+                    
                   />
                 </li>
                 <li>
@@ -60,13 +67,16 @@
           </div>
 
           <div class="input">
-            <label for="second_player">Second Player Name:</label>
-            <input
-              type="text"
-              name="second_player"
-              id="second_player"
-              placeholder="Name"
-            />
+            <div class="name_input">
+                <label for="second_player">Second Player:</label>
+                <input
+                  type="text"
+                  name="second_player"
+                  id="second_player"
+                  placeholder="Name"
+                  required
+                />
+            </div>
 
             <fieldset>
               <legend>Second Player Symbol:</legend>
@@ -87,7 +97,7 @@
                     type="radio"
                     name="second_player_symbol"
                     id="symbol-o-second"
-                    checked
+                    
                   />
                 </li>
               </ul>

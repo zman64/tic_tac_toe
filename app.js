@@ -31,7 +31,7 @@ const Cell = () => {
 ** they represent themselves
 */
 const Player = (name, symbol) => {
-    let _name = name; 
+    let _name = name;
     let _symbol = symbol;
 
     const getName = () => {
@@ -122,7 +122,7 @@ const GameController = (
     playerTwo = Player("Player Two", 'O')
 ) => {
 
-     // const observers = [];
+    // const observers = [];
     // const addObserver = (observer) => {
     //     observers.push(observer);
     // };
@@ -217,9 +217,9 @@ const GameController = (
 
     const resetGameState = () => {
         _gameState.gameOver = false,
-        _gameState.isTie = false,
-        _gameState.winner = null
-        ;
+            _gameState.isTie = false,
+            _gameState.winner = null
+            ;
 
     }
 
@@ -249,6 +249,14 @@ const screenController = ((document) => {
     //const gameStatusDiv = document.querySelector('.gameStatus');
     const playerForm = document.querySelector('.player_form');
     let game = {}; // private variable to hold the game instance
+    var firstPlayerSymbols = document.querySelectorAll('input[name="first_player_symbol"]');
+    var secondPlayerSymbols = document.querySelectorAll('input[name="second_player_symbol"]');
+
+
+
+    document.getElementById("overlay").addEventListener("click", function (event) {
+        document.getElementById("modal").classList.add("hidden");
+    })
 
     const updateScreen = () => {
         // clear the board
@@ -282,7 +290,7 @@ const screenController = ((document) => {
                 playerTurnDiv.textContent = `${activePlayer.getName()} wins!!`
             } else if (gameState.isTie) {
                 playerTurnDiv.textContent = `It's a tie!!`
-            } 
+            }
         }
 
 
@@ -309,13 +317,13 @@ const screenController = ((document) => {
         game.playRound(selectedRow, selectedColumn);
         updateScreen();
     }
-    
+
     // Add event listener for the reset button
     function clickHandlerReset() {
         game.resetGame();
         updateScreen();
     }
- 
+
     // Add event listener for the player submit button
     function clickSubmitPlayer(e) {
         e.preventDefault();
@@ -333,7 +341,7 @@ const screenController = ((document) => {
         initialize();
 
         // Hide form
-        document.querySelector(".player_form").style.display = 'none';
+        document.getElementById("modal").classList.add("hidden");
 
         // Initial render
         //updateScreen(game.getGameState());
@@ -341,6 +349,33 @@ const screenController = ((document) => {
     playerForm.addEventListener("submit", clickSubmitPlayer);
     // Initial render
     //updateScreen();
+
+    // Add an event listener to the first player's radio buttons
+    firstPlayerSymbols.forEach(function (radio) {
+        radio.addEventListener("change", function () {
+            updateSecondPlayerChoices(radio.value);
+        });
+    });
+
+    // Function to update the second player's choices
+    function updateSecondPlayerChoices(selectedSymbol) {
+        secondPlayerSymbols.forEach(function (radio) {
+            if (radio.value === selectedSymbol) {
+                radio.disabled = true; // Disable the matching choice
+                radio.checked = false; // uncheck the disabled radio button
+            } else {
+                radio.disabled = false; // Enable the other choice
+                radio.checked = true;
+                if (!Array.from(secondPlayerSymbols).some(r => r.checked && !r.disabled)) {
+                    radio.checked = true; // Select the enabled choice if nothing is selected
+                }
+            }
+        });
+    }
+
+    // Call this function initially to set the state
+    updateSecondPlayerChoices(document.querySelector('input[name="first_player_symbol"]:checked').value);
+
     return {
         initialize
     };
