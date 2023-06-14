@@ -30,16 +30,24 @@ const Cell = () => {
 ** each player has a name and a symbol by which
 ** they represent themselves
 */
-const Player = (name) => {
+const Player = (name, symbol) => {
     let _name = name; 
-    let _symbol = '';
+    let _symbol = symbol;
 
     const getName = () => {
         return _name;
     }
 
-    return {
+    const getSymbol = () => _symbol;
 
+    const setSymbol = (newSymbol) => {
+        _symbol = newSymbol;
+    }
+
+    return {
+        getName,
+        getSymbol,
+        setSymbol
     };
 };
 
@@ -91,7 +99,8 @@ const GameBoard = (() => {
         for (let i = 0; i < _rows; i++) {
             let rowString = "";
             for (let j = 0; j < _columns; j++) {
-                rowString += _board[i][j].getValue() + " ";
+                let value = _board[i][j].getValue() != "" ? _board[i][j].getValue() : "?"
+                rowString += value + " ";
             }
             console.log(rowString.trim());
         }
@@ -109,27 +118,27 @@ const GameBoard = (() => {
  */
 
 const GameController = (
-    playerOneName = "Player One",
-    playerTwoName = "Player Two"
+    playerOne = Player("Player One", 'X'),
+    playerTwo = Player("Player Two", 'O')
 ) => {
+
+     // const observers = [];
+    // const addObserver = (observer) => {
+    //     observers.push(observer);
+    // };
+    // const notifyObservers = (_gameState) => {
+    //     observers.forEach(observer => observer(_gameState));
+    // }
+
+    const _board = GameBoard;
 
     let _gameState = {
         gameOver: false,
         isTie: false,
-        winner: null
-    };
-    const _board = GameBoard;
+        winner: null,
+    }
 
-    const _players = [
-        {
-            name: playerOneName,
-            token: 'X',
-        },
-        {
-            name: playerTwoName,
-            token: 'O',
-        },
-    ];
+    const _players = [playerOne, playerTwo];
 
     let activePlayer = _players[0];
 
@@ -145,12 +154,12 @@ const GameController = (
 
     const printNewRound = () => {
         _board.printBoard();
-        console.log(`${getActivePlayer().name}'s turn.`);
+        console.log(`${getActivePlayer().getName()}'s turn.`);
     };
 
     const isWinner = () => {
         const b = _board.getBoard();
-        const token = activePlayer.token;
+        const token = getActivePlayer().getSymbol();
         // Check rows, columns, and diagonals for a winner
         return (
             [0, 1, 2].some((i) => b[i].every((cell) => cell.getValue() === token)) ||
@@ -174,25 +183,29 @@ const GameController = (
 
         // Place a token for the current Player
         console.log(
-            `Placing ${getActivePlayer().name}'s token into spot ${row}, ${column}...`
+            `Placing ${getActivePlayer().getName()}'s token into spot ${row}, ${column}...`
         );
 
-        if (!_board.pickSpot(row, column, getActivePlayer().token)) {
+        if (!_board.pickSpot(row, column, getActivePlayer().getSymbol())) {
             console.log("Spot is already taken.");
             return;
         }
 
-        _board.pickSpot(row, column, getActivePlayer().token);
+        _board.pickSpot(row, column, getActivePlayer().getSymbol());
 
-        if (isWinner() || isTie()) {
-            //getGameState();
+        if (isWinner()) {
+            _gameState.gameOver = true;
+            _gameState.winner = getActivePlayer().getName();
             return;
+        } else if (isTie()) {
+            _gameState.gameOver = true;
+            _gameState.isTie = true;
         }
-
 
         // switch player turn
         switchPlayerTurn();
         printNewRound();
+        //notifyObservers()
 
     };
 
@@ -203,30 +216,15 @@ const GameController = (
     };
 
     const resetGameState = () => {
-        _gameState = {
-            gameOver: false,
-            isTie: false,
-            winner: null
-        };
+        _gameState.gameOver = false,
+        _gameState.isTie = false,
+        _gameState.winner = null
+        ;
 
     }
 
     const getGameState = () => {
-
-        if (isWinner()) {
-            console.log(`${getActivePlayer().name} wins!`);
-            _gameState.gameOver = true;
-            _gameState.winner = getActivePlayer();
-        }
-
-        if (isTie()) {
-            console.log("It's a tie!!");
-            _gameState.gameOver = true;
-            _gameState.isTie = true;
-        }
-
         return _gameState;
-
     };
 
     // Start Initial round
@@ -237,29 +235,31 @@ const GameController = (
         getActivePlayer,
         getBoard: _board.getBoard,
         resetGame,
-        getGameState
+        getGameState,
+        //addObserver
     };
 
 
 };
 
 const screenController = ((document) => {
-    const game = GameController();
     const playerTurnDiv = document.querySelector(".turn");
     const boardDiv = document.querySelector(".board");
     const resetButton = document.querySelector('.reset');
-    const gameStatusDiv = document.querySelector('.gameStatus');
-    const playerSubmitButton = document.querySelector('.player_submit_button');
+    //const gameStatusDiv = document.querySelector('.gameStatus');
+    const playerForm = document.querySelector('.player_form');
+    let game = {}; // private variable to hold the game instance
 
-    const updateScreen = (gameState) => {
+    const updateScreen = () => {
         // clear the board
         boardDiv.textContent = "";
 
-        // get the newest version of the board and player turn
+        // get the newest version of the board, player turn, and gameState
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
+        const gameState = game.getGameState();
 
-        playerTurnDiv.textContent = `${activePlayer.name}'s Turn...`;
+        playerTurnDiv.textContent = `${activePlayer.getName()}'s Turn...`;
 
         // Render board squares
         board.forEach((row, rowIdx) => {
@@ -276,20 +276,29 @@ const screenController = ((document) => {
             });
         });
 
-        // Check and handle game state
-
+        // Check and game state for the screen
         if (gameState.gameOver) {
-            if (gameState.isTie && gameState.winner) {
-                playerTurnDiv.textContent = `${activePlayer.name} wins!!`
+            if (gameState.winner) {
+                playerTurnDiv.textContent = `${activePlayer.getName()} wins!!`
             } else if (gameState.isTie) {
-                playerTurnDiv.textContent = `${activePlayer.name} wins!!`
-            } else if (gameState.winner) {
-                playerTurnDiv.textContent = `${activePlayer.name} wins!!`
-            }
+                playerTurnDiv.textContent = `It's a tie!!`
+            } 
         }
 
 
     };
+
+    const initialize = () => {
+        //game.addObserver((gameState) => updateScreen());
+
+        // Add event listeners here.
+        boardDiv.addEventListener("click", clickHandlerBoard);
+        resetButton.addEventListener("click", clickHandlerReset);
+
+        // Initial render
+        updateScreen();
+    }
+
     // Add event listener for the board
     function clickHandlerBoard(e) {
         const selectedColumn = e.target.dataset.column;
@@ -298,37 +307,46 @@ const screenController = ((document) => {
         if (!selectedColumn) return;
 
         game.playRound(selectedRow, selectedColumn);
-        const gameState = game.getGameState();
-        updateScreen(gameState);
+        updateScreen();
     }
-    boardDiv.addEventListener("click", clickHandlerBoard);
-
-
+    
     // Add event listener for the reset button
     function clickHandlerReset() {
         game.resetGame();
         updateScreen();
     }
-    resetButton.addEventListener("click", clickHandlerReset);
-
-    // Add event listenr for the player submit button
+ 
+    // Add event listener for the player submit button
     function clickSubmitPlayer(e) {
         e.preventDefault();
 
-        const playerOneName = document.getElementById("first_player");
-        const playerTwoName = document.getElementById("second_player");
+        const playerOneName = document.getElementById("first_player").value;
+        const playerTwoName = document.getElementById("second_player").value;
+        const playerOneSymbol = document.querySelector('input[name="first_player_symbol"]:checked').value;
+        console.log(playerOneSymbol)
+        const playerTwoSymbol = document.querySelector('input[name="second_player_symbol"]:checked').value;
 
-        const playerOne = new Player(playerOneName);
-        const playerTwo = new Player(playerTwoName);
+        const playerOne = Player(playerOneName, playerOneSymbol);
+        const playerTwo = Player(playerTwoName, playerTwoSymbol);
 
+        game = GameController(playerOne, playerTwo);
+        initialize();
 
+        // Hide form
+        document.querySelector(".player_form").style.display = 'none';
+
+        // Initial render
+        //updateScreen(game.getGameState());
     }
-    playerSubmitButton.addEventListener("submit", clickSubmitPlayer);
-
+    playerForm.addEventListener("submit", clickSubmitPlayer);
     // Initial render
-    updateScreen();
+    //updateScreen();
+    return {
+        initialize
+    };
 
 })(document);
+
 
 // Find and log new global variables
 // Test to see if any global variables were created

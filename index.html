@@ -1,37 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-    <div class="game_container">
-        <!-- <div class="gameStatus"></div> -->
-        <form class="player_form" action="#">
+  <body>
+    <header><h1>Tic Tac Toe</h1></header>
+    
+    <main>
+        <div class="game_container">
+          <button class="reset">Reset</button>
+          <h1 class="turn"></h1>
+          <div class="board"></div>
+        </div>
+    </main>
+    <footer>
+        <p>2023 Odin Project</p>
+    </footer>
+    <div class="modal hidden" id="modal">
+      <div class="overlay" id="overlay"></div>
+      <div id="start-game-form">
+        <h2 class="new-game-title">Start a New Game</h2>
+        <form action="#" class="player_form">
+          <div class="input">
+            <label for="first_player">First Player Name:</label>
+            <input
+              type="text"
+              name="first_player"
+              id="first_player"
+              placeholder="Name"
+            />
+            <fieldset>
+              <legend>First Player Symbol:</legend>
+              <ul>
+                <li>
+                  <label for="symbol-x-first">X</label>
+                  <input
+                    value="X"
+                    type="radio"
+                    name="first_player_symbol"
+                    id="symbol-x-first"
+                    checked
+                  />
+                </li>
+                <li>
+                  <label for="symbol-o-first">O</label>
+                  <input
+                    value="O"
+                    type="radio"
+                    name="first_player_symbol"
+                    id="symbol-o-first"
+                  />
+                </li>
+              </ul>
+            </fieldset>
+          </div>
 
-            <div class="input">
-                <label for="first_player">First Player Name:</label>
-                <input type="text" name="first_player" id="first_player">
-            </div>
+          <div class="input">
+            <label for="second_player">Second Player Name:</label>
+            <input
+              type="text"
+              name="second_player"
+              id="second_player"
+              placeholder="Name"
+            />
 
-            <div class="input">
-                <label for="second_player">Second Player Name:</label>
-                <input type="text" name="second_player" id="second_player">
-            </div>
+            <fieldset>
+              <legend>Second Player Symbol:</legend>
+              <ul>
+                <li>
+                  <label for="symbol-x-second">X</label>
+                  <input
+                    value="X"
+                    type="radio"
+                    name="second_player_symbol"
+                    id="symbol-x-second"
+                  />
+                </li>
+                <li>
+                  <label for="symbol-o-second">O</label>
+                  <input
+                    value="O"
+                    type="radio"
+                    name="second_player_symbol"
+                    id="symbol-o-second"
+                    checked
+                  />
+                </li>
+              </ul>
+            </fieldset>
+          </div>
 
-            <button class="player_submit_button" type="submit">Submit</button>
-
+          <button class="player_submit_button" type="submit">Start Game</button>
         </form>
-        
-        <button class="reset">Reset</button>
-        <h1 class="turn"></h1>
-        <div class="board"></div>
+      </div>
     </div>
     <script src="app.js"></script>
-</body>
-
+  </body>
 </html>
