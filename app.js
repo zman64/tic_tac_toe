@@ -25,6 +25,25 @@ const Cell = () => {
     };
 };
 
+/* 
+** the player represents the action objects of the game
+** each player has a name and a symbol by which
+** they represent themselves
+*/
+const Player = (name) => {
+    let _name = name; 
+    let _symbol = '';
+
+    const getName = () => {
+        return _name;
+    }
+
+    return {
+
+    };
+};
+
+
 /*
  ** The GameBoard represents the state of the board
  ** Each square holds a Cell
@@ -166,7 +185,7 @@ const GameController = (
         _board.pickSpot(row, column, getActivePlayer().token);
 
         if (isWinner() || isTie()) {
-            getGameState();
+            //getGameState();
             return;
         }
 
@@ -179,8 +198,18 @@ const GameController = (
 
     const resetGame = () => {
         _board.resetBoard();
+        resetGameState();
         setActivePlayer();
     };
+
+    const resetGameState = () => {
+        _gameState = {
+            gameOver: false,
+            isTie: false,
+            winner: null
+        };
+
+    }
 
     const getGameState = () => {
 
@@ -220,6 +249,7 @@ const screenController = ((document) => {
     const boardDiv = document.querySelector(".board");
     const resetButton = document.querySelector('.reset');
     const gameStatusDiv = document.querySelector('.gameStatus');
+    const playerSubmitButton = document.querySelector('.player_submit_button');
 
     const updateScreen = (gameState) => {
         // clear the board
@@ -247,10 +277,12 @@ const screenController = ((document) => {
         });
 
         // Check and handle game state
-        
+
         if (gameState.gameOver) {
-            if (gameState.isTie) {
-                playerTurnDiv.textContent = `It's a tie!!`
+            if (gameState.isTie && gameState.winner) {
+                playerTurnDiv.textContent = `${activePlayer.name} wins!!`
+            } else if (gameState.isTie) {
+                playerTurnDiv.textContent = `${activePlayer.name} wins!!`
             } else if (gameState.winner) {
                 playerTurnDiv.textContent = `${activePlayer.name} wins!!`
             }
@@ -278,6 +310,20 @@ const screenController = ((document) => {
         updateScreen();
     }
     resetButton.addEventListener("click", clickHandlerReset);
+
+    // Add event listenr for the player submit button
+    function clickSubmitPlayer(e) {
+        e.preventDefault();
+
+        const playerOneName = document.getElementById("first_player");
+        const playerTwoName = document.getElementById("second_player");
+
+        const playerOne = new Player(playerOneName);
+        const playerTwo = new Player(playerTwoName);
+
+
+    }
+    playerSubmitButton.addEventListener("submit", clickSubmitPlayer);
 
     // Initial render
     updateScreen();

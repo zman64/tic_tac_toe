@@ -1,4 +1,9 @@
 :root {
+    --primary-clr: red;
+    --secondary-clr: orange;
+    --accent-clr: yellow;
+    --btn-clr: blue;
+    --board-clr: cyan;
 
 }
 
@@ -15,16 +20,22 @@ body {
     align-items: center;
 }
 
+.player_form {
+    margin-bottom: 10px;
+}
+
 .board {
     display: grid;
+    
     height: 500px;
     width: 500px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    border: 1px solid black;
-    gap: 2px;
-    padding: 2px;
+    /* border: 1px solid black; */
+    gap: 20px;
+    padding: 20px;
     background-color: #f3f3f3;
+    border-radius: 10px;
 }
 
 .cell {
