@@ -1,3 +1,4 @@
+/* #region Base */
 :root {
     --primary-clr: #1e3D59; /* dark blue */
     --secondary-clr: #3e6a94; /* medium blue */
@@ -26,26 +27,87 @@ body {
     justify-content: center;
     align-items: center;
     font-family: 'Roboto', sans-serif;
-    letter-spacing: 1;
-    line-height: 1.5;
+    display: grid;
+    grid-template-columns: 1fr;
+    /* align-content: center; */
+    grid-template-rows: auto 1fr auto;
+    background-color: #f3f3f3;
+}
+/* #endregion */
+
+/* #region Header */
+header {
+    background-color: var(--primary-clr);
+    /* width: 100%; */
+    text-align: center;
+    padding: 2em;
+    color: var(--board-clr);
+}
+/* #endregion */
+
+/* #region Main */
+
+main {
+    justify-self: center;
+    /* background-color: #f3f3f3; */
+    max-width: 500px;
+    align-self: stretch;
+    display: grid;
+    grid-template-rows: 1fr;
 }
 
-.player_form {
-    margin-bottom: 10px;
+.game_container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(100px, 10vh) auto 1fr;
+    align-items: center;
+    gap: 20px;
+    justify-items: center;
+}
+
+.button_wrapper {
+    align-self: center;
+    display: flex;
+    gap: 15px;
+    /* flex: 1; */
+}
+
+
+.reset, .new_game {
+    border: none;
+    border-radius: 15px;
+    color: var(--board-clr);
+    font-size: 1rem;
+    background-color: var(--secondary-clr);
+    padding: 0.5em 1em;
+    
 }
 
 .board {
     display: grid;
-    
     height: 500px;
     width: 500px;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    /* border: 1px solid black; */
+    border: 1px solid black;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
     gap: 20px;
     padding: 20px;
     background-color: var(--btn-clr);
     border-radius: 10px;
+    align-self: start;
+   
+}
+
+
+
+.turn {
+    text-align: center;
+    word-wrap: break-word;
+    padding: 1em;
+    font-size: 1.2rem;
+    align-self: end;
+ 
 }
 
 .cell {
@@ -58,8 +120,18 @@ body {
     background-color: var(--board-clr);
     cursor: pointer;
 }
+/* #endregion */
 
-/* --- Modal --- */
+/* #region Footer --- */
+footer {
+    background-color: var(--primary-clr);
+    color: var(--board-clr);
+    text-align: center;
+    padding: 0.5em;
+}
+/* #endregion */
+
+/* #region Modal */
 .modal {
     position: fixed;
     top: 0;
@@ -81,8 +153,9 @@ body {
     background-color: rgba(0,0,0,0.5);
     z-index: 20;
 }
+/* #endregion */
 
-/* --- Form --- */
+/* #region Form --- */
 #start_game_form {
     position: relative;
     background-color: var(--board-clr);
@@ -102,6 +175,7 @@ body {
     justify-content: center;
     align-items: start;
     gap: 20px;
+    margin-bottom: 10px;
 }
 
 .new_game_title {
@@ -183,3 +257,5 @@ legend {
 fieldset {
     border: none;
 }
+
+/* #endregion */

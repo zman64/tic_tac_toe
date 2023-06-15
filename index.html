@@ -15,9 +15,11 @@
     
     <main>
         <div class="game_container">
-          <button class="reset">Reset</button>
-          <button class="new_game">New Game</button>
-          <h1 class="turn"></h1>
+          <h1 class="turn">Time to start a New Game!</h1>
+          <div class="button_wrapper">
+            <button class="new_game">New Game</button>
+            <button class="reset">Reset</button>
+          </div>
           <div class="board"></div>
         </div>
     </main>
@@ -50,7 +52,7 @@
                     type="radio"
                     name="first_player_symbol"
                     id="symbol-x-first"
-                    
+                    checked
                   />
                 </li>
                 <li>
@@ -97,7 +99,7 @@
                     type="radio"
                     name="second_player_symbol"
                     id="symbol-o-second"
-                    
+                    checked
                   />
                 </li>
               </ul>

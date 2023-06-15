@@ -246,17 +246,94 @@ const screenController = ((document) => {
     const playerTurnDiv = document.querySelector(".turn");
     const boardDiv = document.querySelector(".board");
     const resetButton = document.querySelector('.reset');
-    //const gameStatusDiv = document.querySelector('.gameStatus');
     const playerForm = document.querySelector('.player_form');
     let game = {}; // private variable to hold the game instance
     var firstPlayerSymbols = document.querySelectorAll('input[name="first_player_symbol"]');
     var secondPlayerSymbols = document.querySelectorAll('input[name="second_player_symbol"]');
+    let newGameButton = document.querySelector('.new_game');
+    let displayedMessages = {};
 
+    let duringTurnMessages = [
+        "{player}, unleash your {symbol}!",
+        "{player}, it's time to make your mark!",
+        "The battlefield awaits, {player}!",
+        "Make it count, {player}!",
+        "{player}, remember: great power comes with great responsibility!",
+        "{player}, may the {symbol} be with you!",
+        "Step right up, {player}! The spotlight is on you!",
+        "{player}, time to spin the wheel of fortune!"
+    ]
+
+    let tieMessages = [
+        "It's a stalemate, folks! The duel was too intense for a victor.",
+        "Well, that's a wrap! Nobody won, but nobody lost either!",
+        "The battle of wits ends in a draw! Play again for eternal glory?",
+        "A tie! The tension was palpable, but the gods have decided on no victor this day."
+    ]
+
+    let winMessages = [
+        "{player} stands victorious! The crowd goes wild!",
+        "{player} triumphs! The {symbol}'s have it!",
+        "And that's a wrap! {player} and their {symbol} takes the cake!",
+        "{player} {symbol}’s strategy paid off! A round of applause for the victor!",
+        "The dust settles and {player} emerges as the champion!",
+        "{player} has conquered the board! Well played!",
+        "The stars have aligned for {player} today! A well-deserved victory!",
+        "Epic win for {player}! The Tic Tac Toe legend continues!",
+    ]
+
+    const originalDuringTurnMessages = [...duringTurnMessages];
+    const originalTieMessages = [...tieMessages];
+    const originalWinMessages = [...winMessages];
 
 
     document.getElementById("overlay").addEventListener("click", function (event) {
         document.getElementById("modal").classList.add("hidden");
     })
+
+    const getRandomMessage = (messagesArray) => {
+        const randomIndex = Math.floor(Math.random() * messagesArray.length);
+        return messagesArray.splice(randomIndex, 1)[0];
+    }
+
+    const displayDuringTurnMessage = () => {
+        const activePlayerName = game.getActivePlayer().getName();
+        console.log(activePlayerName);
+        if (!displayedMessages[activePlayerName]) {
+            displayedMessages[activePlayerName] = [];
+        }
+        let availableMessages = duringTurnMessages.filter(message => !displayedMessages[activePlayerName].includes(message));
+
+        if (availableMessages.length === 0) {
+            // Reset the displayed messages for the player if all have been shown.
+            displayedMessages[activePlayerName] = [];
+            availableMessages = duringTurnMessages;
+        }
+
+        const message = getRandomMessage(availableMessages);
+        displayedMessages[activePlayerName].push(message);
+
+        const formattedMessage = message.replace('{player}', activePlayerName).replace('{symbol}', game.getActivePlayer().getSymbol());
+        return formattedMessage;
+    }
+
+    const resetMessages = () => {
+        duringTurnMessages = [...originalDuringTurnMessages]
+        winMessages = [...originalWinMessages];
+        tieMessages = [...originalTieMessages];
+    }
+
+    const displayTieMessage = () => {
+        const message = getRandomMessage(tieMessages);
+        return message;
+    }
+
+    const displayWinMessage = () => {
+        const message = getRandomMessage(winMessages);
+        const player = game.getActivePlayer();
+        const formattedMessage = message.replace('{player}', player.getName()).replace('{symbol}', player.getSymbol());
+        return formattedMessage;
+    }
 
     const updateScreen = () => {
         // clear the board
@@ -267,7 +344,6 @@ const screenController = ((document) => {
         const activePlayer = game.getActivePlayer();
         const gameState = game.getGameState();
 
-        playerTurnDiv.textContent = `${activePlayer.getName()}'s Turn...`;
 
         // Render board squares
         board.forEach((row, rowIdx) => {
@@ -287,10 +363,15 @@ const screenController = ((document) => {
         // Check and game state for the screen
         if (gameState.gameOver) {
             if (gameState.winner) {
-                playerTurnDiv.textContent = `${activePlayer.getName()} wins!!`
+                let winMessage = displayWinMessage();
+                playerTurnDiv.textContent = `${winMessage}`
             } else if (gameState.isTie) {
-                playerTurnDiv.textContent = `It's a tie!!`
+                let tieMessage = displayTieMessage();
+                playerTurnDiv.textContent = `${tieMessage}`
             }
+        } else {
+            let turnMessage = displayDuringTurnMessage();
+            playerTurnDiv.textContent = `${turnMessage}`;
         }
 
 
@@ -313,7 +394,7 @@ const screenController = ((document) => {
         const selectedRow = e.target.dataset.row;
 
         if (!selectedColumn) return;
-
+        if (game.getGameState().gameOver === true) return;
         game.playRound(selectedRow, selectedColumn);
         updateScreen();
     }
@@ -321,11 +402,12 @@ const screenController = ((document) => {
     // Add event listener for the reset button
     function clickHandlerReset() {
         game.resetGame();
+        resetMessages();
         updateScreen();
     }
 
     // Add event listener for the player submit button
-    function clickSubmitPlayer(e) {
+    function clickStartGame(e) {
         e.preventDefault();
 
         const playerOneName = document.getElementById("first_player").value;
@@ -334,21 +416,29 @@ const screenController = ((document) => {
         console.log(playerOneSymbol)
         const playerTwoSymbol = document.querySelector('input[name="second_player_symbol"]:checked').value;
 
-        const playerOne = Player(playerOneName, playerOneSymbol);
-        const playerTwo = Player(playerTwoName, playerTwoSymbol);
+        let playerOne = Player(playerOneName, playerOneSymbol);
+        let playerTwo = Player(playerTwoName, playerTwoSymbol);
 
         game = GameController(playerOne, playerTwo);
+        game.resetGame();
+        resetMessages();
         initialize();
+
+        // clear form
+        document.querySelector('.player_form').reset();
 
         // Hide form
         document.getElementById("modal").classList.add("hidden");
-
-        // Initial render
-        //updateScreen(game.getGameState());
     }
-    playerForm.addEventListener("submit", clickSubmitPlayer);
-    // Initial render
-    //updateScreen();
+    playerForm.addEventListener("submit", clickStartGame);
+
+    // Add event listener for the new game button
+    function clickStartNewGame(e) {
+        e.preventDefault();
+        document.getElementById("modal").classList.remove("hidden");
+
+    }
+    newGameButton.addEventListener("click", clickStartNewGame);
 
     // Add an event listener to the first player's radio buttons
     firstPlayerSymbols.forEach(function (radio) {
@@ -381,7 +471,6 @@ const screenController = ((document) => {
     };
 
 })(document);
-
 
 // Find and log new global variables
 // Test to see if any global variables were created
